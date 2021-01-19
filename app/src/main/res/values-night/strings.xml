@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="reg_title">1.Зарегистрируйтесь на сайте</string>
+    <string name="site_link">Bez-sveta.ru</string>
+    <string name="code_title">Код этого устройства</string>
+    <string name="copy_code_title">Скопировать код</string>
+    <string name="status_title">Текущий статус:</string>
+    <string name="faq_link">Вопросы и ответы</string>
+    <string name="about_link">О приложении</string>
+    <string name="contacts_link">Контакты</string>
+</resources>
