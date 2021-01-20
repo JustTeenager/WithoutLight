@@ -6,6 +6,6 @@ import retrofit2.http.POST
 
 interface StatusLightAPI {
 
-    @POST("/sendData")
-    fun sendData(@Body batteryStatus: BatteryStatus): Call<String>
+    @POST("apiTest/")
+    fun sendData(@Body batteryStatus: BatteryStatus): Call<Void>
 }

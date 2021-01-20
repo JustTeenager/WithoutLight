@@ -80,13 +80,16 @@
 
         <TextView
             android:id="@+id/copy_text"
+
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="22sp"
             android:textColor="@color/black"
             android:paddingLeft="16dp"
+            android:paddingTop="4dp"
+            android:paddingBottom="4dp"
             android:paddingRight="16dp"
-            android:background="#c0d93f"
+            android:background="@color/green_light"
             android:textStyle="normal"
             android:text="@string/copy_code_title"
             android:layout_marginTop="6dp"/>
@@ -111,10 +114,12 @@
                     android:id="@+id/light_status"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginLeft="8dp"
                     android:textSize="22sp"
                     android:textStyle="bold"
                     android:textColor="@{lightStatus ? context.getColor(R.color.green) :context.getColor(R.color.red)}"
-                    android:text="@{lightStatus ? context.getString(R.string.has_light_status) :context.getString(R.string.no_light_status)}"/>
+                    android:text="@{lightStatus ? context.getString(R.string.has_light_status) :context.getString(R.string.no_light_status)}"
+                    android:layout_marginStart="8dp" />
             </LinearLayout>
 
             <TextView
