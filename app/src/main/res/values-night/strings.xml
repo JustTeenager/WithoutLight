@@ -8,4 +8,5 @@
     <string name="faq_link">Вопросы и ответы</string>
     <string name="about_link">О приложении</string>
     <string name="contacts_link">Контакты</string>
+    <string name="text_copy">Код скопирован</string>
 </resources>

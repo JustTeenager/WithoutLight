@@ -2,13 +2,17 @@ package ru.bezsveta.ibuzzpromo
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.provider.Settings
-import android.util.Log
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), MainFragment.Callback {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        Log.d("tut", Settings.Secure.getString(this.contentResolver, Settings.Secure.ANDROID_ID))
+        val fragment = MainFragment()
+        supportFragmentManager.beginTransaction().add(R.id.container_fragment, fragment).commit()
+    }
+
+    override fun changeFragmentFromMainToWebView(link: String) {
+        supportFragmentManager.beginTransaction().replace(R.id.container_fragment, WebViewFragment.newInstance(link))
+                .addToBackStack(null).commit()
     }
 }
