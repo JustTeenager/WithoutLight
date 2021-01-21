@@ -59,27 +59,27 @@ class SendDataService : Service() {
         setLightStatusReceiver()
     }
 
-    fun deleteProvider(){
+    private fun deleteProvider(){
         this.provider=null
     }
 
     private fun sendStartNotification() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) createChannel()
-        val notification = buildNotification()
+        val notification = buildNotification(this.resources.getString(R.string.app_name))
         this.startForeground(notifyId, notification)
     }
 
-    private fun buildNotification(): Notification {
+    private fun buildNotification(title:String): Notification {
         val builder = NotificationCompat.Builder(baseContext, channelId)
 
         builder.setSmallIcon(R.mipmap.ic_launcher_circle)
-                .setContentTitle(this.resources.getString(R.string.app_name))
+                .setContentTitle(title)
                 .setShowWhen(true)
                 .setOngoing(true)
                 .setProgress(100, 0, true)
                 .priority = NotificationCompat.PRIORITY_MAX
+        return  builder.build()
 
-        return builder.build()
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -110,6 +110,11 @@ class SendDataService : Service() {
     override fun onUnbind(intent: Intent?): Boolean {
         deleteProvider()
         return super.onUnbind(intent)
+    }
+
+    fun changeNotification(title: String){
+        val notification = buildNotification(title)
+        this.startForeground(notifyId, notification)
     }
 
     inner class SendThread(name: String?) : HandlerThread(name) {
@@ -145,6 +150,7 @@ class SendDataService : Service() {
             if (isNetworkConnect()) timer.schedule(doAsynchronousTask, 2000, 10000)
             else {
                 provider?.showDialog()
+                changeNotification(getString(R.string.no_network))
                 timer.cancel()
             }
         }

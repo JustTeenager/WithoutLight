@@ -1,6 +1,7 @@
 package ru.bezsveta.ibuzzpromo
 
 import android.annotation.SuppressLint
+import android.app.Activity.RESULT_OK
 import android.content.*
 import android.content.Context.BIND_AUTO_CREATE
 import android.os.BatteryManager
@@ -28,6 +29,10 @@ class MainFragment:SendDataService.BatteryStatusProvider, Fragment(){
             "https://bez-sveta.ru/register", "https://bez-sveta.ru/voprosy-i-otvety.html",
             "https://bez-sveta.ru/prilozhenie.html", "https://bez-sveta.ru/kontakty.html"
     )
+
+    companion object {
+        private const val NO_INTERNET_REQUEST_CODE = 1
+    }
 
     private lateinit var callback: Callback
     private lateinit var dataService: SendDataService
@@ -120,14 +125,27 @@ class MainFragment:SendDataService.BatteryStatusProvider, Fragment(){
         context?.unbindService(conn)
     }
 
-    interface Callback{
-        fun changeFragmentFromMainToWebView(link: String)
-    }
-
     override fun getCode(): String? =binding.code
 
     override fun showDialog() {
-        //TODO Ебануть сюда диалог об отключении вайфая
-        activity?.runOnUiThread {  }
+        activity?.runOnUiThread {
+            val dialog = InternetConnectionDialog()
+            dialog.isCancelable = false
+            dialog.setTargetFragment(this, NO_INTERNET_REQUEST_CODE)
+            fragmentManager?.let { dialog.show(it, null) }
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode==RESULT_OK){
+            if(requestCode == NO_INTERNET_REQUEST_CODE){
+                activity?.let { dataService.changeNotification(it.getString(R.string.app_name)) }
+            }
+        }
+    }
+
+    interface Callback{
+        fun changeFragmentFromMainToWebView(link: String)
     }
 }

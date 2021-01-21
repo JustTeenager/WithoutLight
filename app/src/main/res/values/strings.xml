@@ -13,4 +13,7 @@
     <string name="about_link">О приложении</string>
     <string name="contacts_link">Контакты</string>
     <string name="text_copy">Код скопирован</string>
+    <string name="disconnect">Не удалось подключиться к серверу. Проверьте соединение с интернетом.</string>
+    <string name="try_again">Попробовать ещё раз</string>
+    <string name="no_network">Соединение не установлено</string>
 </resources>
