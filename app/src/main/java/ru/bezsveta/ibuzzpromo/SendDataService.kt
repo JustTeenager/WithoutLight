@@ -65,7 +65,7 @@ class SendDataService : Service() {
 
     private fun sendStartNotification() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) createChannel()
-        val notification = buildNotification(this.resources.getString(R.string.app_name))
+        val notification = buildNotification(this.resources.getString(R.string.connected))
         this.startForeground(notifyId, notification)
     }
 
@@ -136,29 +136,39 @@ class SendDataService : Service() {
         }
 
         private fun sendBatteryData(){
+            var isDisconnected=false
             val doAsynchronousTask = object : TimerTask() {
                 override fun run() {
-                    Log.d("tut_lightstatus", lightStatus.toString())
-                    Log.d(
-                        "tut_chatging_status",
-                        (BatteryManager.BATTERY_STATUS_CHARGING == lightStatus).toString()
-                    )
-                    Log.d("tut_code", code.toString())
-                    BaseRetrofit.sendBatteryData(BatteryStatus(if (lightStatus == BatteryManager.BATTERY_STATUS_CHARGING || lightStatus == BatteryManager.BATTERY_STATUS_FULL) 1 else 0, code)).execute()
+                    if (isNetworkConnect()) {
+                        if (isDisconnected) this@SendDataService.startForeground(notifyId,buildNotification(getString(R.string.connected)))
+                        isDisconnected=false
+                        provider?.dismissDialog()
+                        Log.d("tut_connection_true",isNetworkConnect().toString())
+                        Log.d("tut_lightstatus", lightStatus.toString())
+                        BaseRetrofit.sendBatteryData(
+                            BatteryStatus(
+                                if (lightStatus == BatteryManager.BATTERY_STATUS_CHARGING || lightStatus == BatteryManager.BATTERY_STATUS_FULL) 1 else 0,
+                                code
+                            )
+                        ).execute()
+                    }
+                    else{
+                        if (!isDisconnected) {
+                            provider?.showDialog()
+                            changeNotification(getString(R.string.no_network))
+                            isDisconnected=true
+                        }
+                    }
                 }
             }
-            if (isNetworkConnect()) timer.schedule(doAsynchronousTask, 2000, 10000)
-            else {
-                provider?.showDialog()
-                changeNotification(getString(R.string.no_network))
-                timer.cancel()
-            }
+             timer.schedule(doAsynchronousTask, 2000, 60000)
         }
     }
 
     interface BatteryStatusProvider{
         fun getCode():String?
         fun showDialog()
+        fun dismissDialog()
     }
 
     class ServiceProvider(private val service: SendDataService) : Binder(){

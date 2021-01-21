@@ -36,6 +36,7 @@ class MainFragment:SendDataService.BatteryStatusProvider, Fragment(){
 
     private lateinit var callback: Callback
     private lateinit var dataService: SendDataService
+    private val dialog = InternetConnectionDialog()
 
     private val conn:ServiceConnection = object:ServiceConnection{
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
@@ -95,7 +96,7 @@ class MainFragment:SendDataService.BatteryStatusProvider, Fragment(){
         receiver=object : BroadcastReceiver() {
             override fun onReceive(context: Context?, intent: Intent?) {
                 val status = intent?.getIntExtra(BatteryManager.EXTRA_STATUS, -1)
-                binding.setLightStatus(status == BatteryManager.BATTERY_STATUS_CHARGING)
+                binding.setLightStatus(status == BatteryManager.BATTERY_STATUS_CHARGING || status== BatteryManager.BATTERY_STATUS_FULL)
             }
         }
         context!!.registerReceiver(receiver,IntentFilter(Intent.ACTION_BATTERY_CHANGED))
@@ -129,10 +130,16 @@ class MainFragment:SendDataService.BatteryStatusProvider, Fragment(){
 
     override fun showDialog() {
         activity?.runOnUiThread {
-            val dialog = InternetConnectionDialog()
             dialog.isCancelable = false
             dialog.setTargetFragment(this, NO_INTERNET_REQUEST_CODE)
             fragmentManager?.let { dialog.show(it, null) }
+        }
+    }
+
+    override fun dismissDialog() {
+        activity?.runOnUiThread {
+            if (dialog.isVisible)
+            dialog.dismiss()
         }
     }
 
@@ -140,7 +147,7 @@ class MainFragment:SendDataService.BatteryStatusProvider, Fragment(){
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode==RESULT_OK){
             if(requestCode == NO_INTERNET_REQUEST_CODE){
-                activity?.let { dataService.changeNotification(it.getString(R.string.app_name)) }
+                //activity?.let { dataService.changeNotification(it.getString(R.string.app_name)) }
             }
         }
     }

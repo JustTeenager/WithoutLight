@@ -8,7 +8,7 @@
     <string name="status_title">Текущий статус:</string>
     <string name="has_light_status">Есть свет</string>
     <string name="no_light_status">Нет света</string>
-    <string name="info_title">Информация</string>
+    <string name="info_title">Информация:</string>
     <string name="faq_link">Вопросы и ответы</string>
     <string name="about_link">О приложении</string>
     <string name="contacts_link">Контакты</string>
@@ -16,4 +16,5 @@
     <string name="disconnect">Не удалось подключиться к серверу. Проверьте соединение с интернетом.</string>
     <string name="try_again">Попробовать ещё раз</string>
     <string name="no_network">Соединение не установлено</string>
+    <string name="connected">Соединение установлено</string>
 </resources>
