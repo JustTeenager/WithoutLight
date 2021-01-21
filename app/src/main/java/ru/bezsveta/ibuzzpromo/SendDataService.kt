@@ -170,7 +170,7 @@ class SendDataService : Service() {
                     }
                 }
             }
-             timer.schedule(doAsynchronousTask, 2000, 60000)
+             timer.schedule(doAsynchronousTask, 2000, 10000)
         }
     }
 

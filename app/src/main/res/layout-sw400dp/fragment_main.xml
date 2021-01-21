@@ -31,68 +31,68 @@
             android:layout_weight="2"
             android:orientation="vertical">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:text="@string/reg_title"
-            android:textSize="20sp"
-            android:textColor="@color/black"
-            android:textStyle="normal"
-            android:layout_marginTop="6dp"
-            android:layout_height="wrap_content"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:text="@string/reg_title"
+                android:textSize="25sp"
+                android:textColor="@color/black"
+                android:textStyle="normal"
+                android:layout_marginTop="6dp"
+                android:layout_height="wrap_content"/>
 
-        <TextView
-            android:id="@+id/link_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/site_link"
-            android:textSize="18sp"
-            android:textColor="@android:color/holo_blue_dark"
-            android:layout_marginTop="6dp"
-            />
+            <TextView
+                android:id="@+id/link_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/site_link"
+                android:textSize="24sp"
+                android:textColor="@android:color/holo_blue_dark"
+                android:layout_marginTop="6dp"
+                />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="19sp"
-            android:textColor="@color/black"
-            android:textStyle="normal"
-            android:text="@string/bind_title"
-            android:layout_marginTop="6dp"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="25sp"
+                android:textColor="@color/black"
+                android:textStyle="normal"
+                android:text="@string/bind_title"
+                android:layout_marginTop="6dp"/>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="16sp"
-            android:textColor="@color/black"
-            android:textStyle="bold"
-            android:text="@string/code_title"
-            android:layout_marginTop="6dp"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="22sp"
+                android:textColor="@color/black"
+                android:textStyle="bold"
+                android:text="@string/code_title"
+                android:layout_marginTop="6dp"/>
 
-        <TextView
-            android:id="@+id/code_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="14sp"
-            android:textColor="@color/black"
-            android:textStyle="normal"
-            android:text="@{code}"
-            android:layout_marginTop="6dp"/>
+            <TextView
+                android:id="@+id/code_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="20sp"
+                android:textColor="@color/black"
+                android:textStyle="normal"
+                android:text="@{code}"
+                android:layout_marginTop="6dp"/>
 
-        <TextView
-            android:id="@+id/copy_text"
+            <TextView
+                android:id="@+id/copy_text"
 
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="16sp"
-            android:textColor="@color/black"
-            android:paddingLeft="16dp"
-            android:paddingTop="4dp"
-            android:paddingBottom="4dp"
-            android:paddingRight="16dp"
-            android:background="@color/green_light"
-            android:textStyle="normal"
-            android:text="@string/copy_code_title"
-            android:layout_marginTop="6dp"/>
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="22sp"
+                android:textColor="@color/black"
+                android:paddingLeft="16dp"
+                android:paddingTop="4dp"
+                android:paddingBottom="4dp"
+                android:paddingRight="16dp"
+                android:background="@color/green_light"
+                android:textStyle="normal"
+                android:text="@string/copy_code_title"
+                android:layout_marginTop="6dp"/>
 
 
             <LinearLayout
@@ -105,7 +105,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="16sp"
+                    android:textSize="22sp"
                     android:textStyle="bold"
                     android:textColor="@color/black"
                     android:text="@string/status_title"/>
@@ -115,7 +115,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="8dp"
-                    android:textSize="16sp"
+                    android:textSize="22sp"
                     android:textStyle="bold"
                     android:textColor="@{lightStatus ? context.getColor(R.color.green) :context.getColor(R.color.red)}"
                     android:text="@{lightStatus ? context.getString(R.string.has_light_status) :context.getString(R.string.no_light_status)}"
@@ -125,7 +125,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="16sp"
+                android:textSize="22sp"
                 android:textColor="@color/black"
                 android:textStyle="bold"
                 android:layout_gravity="start"
@@ -139,7 +139,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="start"
                 android:text="@string/faq_link"
-                android:textSize="14sp"
+                android:textSize="18sp"
                 android:textColor="@android:color/holo_blue_dark"
                 android:layout_marginLeft="12dp"
                 android:layout_marginTop="6dp"/>
@@ -150,7 +150,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="start"
                 android:text="@string/about_link"
-                android:textSize="14sp"
+                android:textSize="18sp"
                 android:textColor="@android:color/holo_blue_dark"
                 android:layout_marginLeft="12dp"
                 android:layout_marginTop="6dp"/>
@@ -161,7 +161,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="start"
                 android:text="@string/contacts_link"
-                android:textSize="14sp"
+                android:textSize="18sp"
                 android:textColor="@android:color/holo_blue_dark"
                 android:layout_marginLeft="12dp"
                 android:layout_marginTop="6dp"/>
