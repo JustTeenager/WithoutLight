@@ -1,4 +1,4 @@
-package ru.bezsveta.ibuzzpromo.retrofit
+package ru.bezsveta.ibuzzpromo.model
 
 import com.google.gson.annotations.SerializedName
 

@@ -8,16 +8,15 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.net.ConnectivityManager
 import android.os.*
 import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 import ru.bezsveta.ibuzzpromo.retrofit.BaseRetrofit
-import ru.bezsveta.ibuzzpromo.retrofit.BatteryStatus
+import ru.bezsveta.ibuzzpromo.model.BatteryStatus
 import java.util.*
+
 
 class SendDataService : Service() {
 
@@ -36,7 +35,7 @@ class SendDataService : Service() {
 
     override fun onCreate() {
         super.onCreate()
-        Log.d("provider_null", (provider==null).toString())
+        Log.d("provider_null", (provider == null).toString())
         sendStartNotification()
         thread=SendThread("sendThread")
     }
@@ -58,6 +57,10 @@ class SendDataService : Service() {
         this.provider=provider
         code = provider.getCode()
         setLightStatusReceiver()
+    }
+
+    fun deleteProvider(){
+        this.provider=null
     }
 
     private fun sendStartNotification() {
@@ -91,11 +94,22 @@ class SendDataService : Service() {
     private fun setLightStatusReceiver(){
         receiver=object : BroadcastReceiver() {
             override fun onReceive(context: Context?, intent: Intent?) {
-                Log.d("serviceStatus",lightStatus.toString())
+                Log.d("serviceStatus", lightStatus.toString())
                 lightStatus = intent?.getIntExtra(BatteryManager.EXTRA_STATUS, -1)
             }
         }
         registerReceiver(receiver, IntentFilter(Intent.ACTION_BATTERY_CHANGED))
+    }
+
+    private fun isNetworkConnect(): Boolean {
+        val cm = getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
+        val netinfo = cm.activeNetworkInfo
+        return netinfo != null && netinfo.isConnected
+    }
+
+    override fun onUnbind(intent: Intent?): Boolean {
+        deleteProvider()
+        return super.onUnbind(intent)
     }
 
     inner class SendThread(name: String?) : HandlerThread(name) {
@@ -105,7 +119,7 @@ class SendDataService : Service() {
             super.onLooperPrepared()
             handler= Handler(looper){
                 when(it.what){
-                    CODE_TO_SEND_BATTERY_DATA->sendBatteryData()
+                    CODE_TO_SEND_BATTERY_DATA -> sendBatteryData()
                 }
                 return@Handler false
             }
@@ -119,34 +133,29 @@ class SendDataService : Service() {
         private fun sendBatteryData(){
             val doAsynchronousTask = object : TimerTask() {
                 override fun run() {
-                    //TODO Поставить присутствие эл-ва при 100% зарядки
-                    Log.d("tut_lightstatus",lightStatus.toString())
-                    Log.d("tut_chatging_status",(BatteryManager.BATTERY_STATUS_CHARGING==lightStatus).toString())
-                    Log.d("tut_code",code.toString())
-                    BaseRetrofit.sendBatteryData(BatteryStatus(if (lightStatus==BatteryManager.BATTERY_STATUS_CHARGING) 1 else 0,code)).enqueue(object:Callback<Void>{
-                        override fun onResponse(call: Call<Void>, response: Response<Void>) {
-                            if (response.isSuccessful) Log.d("tut_response_suc",response.message())
-                            Log.d("tut_response","isHere")
-                            Log.d("tut_method",call.request().method())
-                            Log.d("tut_body",call.request().body().toString())
-                            Log.d("tut_url",call.request().url().toString())
-                        }
-
-                        override fun onFailure(call: Call<Void>, t: Throwable) {
-                            t.printStackTrace()
-                        }
-                    })
+                    Log.d("tut_lightstatus", lightStatus.toString())
+                    Log.d(
+                        "tut_chatging_status",
+                        (BatteryManager.BATTERY_STATUS_CHARGING == lightStatus).toString()
+                    )
+                    Log.d("tut_code", code.toString())
+                    BaseRetrofit.sendBatteryData(BatteryStatus(if (lightStatus == BatteryManager.BATTERY_STATUS_CHARGING || lightStatus == BatteryManager.BATTERY_STATUS_FULL) 1 else 0, code)).execute()
                 }
             }
-            timer.schedule(doAsynchronousTask, 2000, 10000)
+            if (isNetworkConnect()) timer.schedule(doAsynchronousTask, 2000, 10000)
+            else {
+                provider?.showDialog()
+                timer.cancel()
+            }
         }
     }
 
     interface BatteryStatusProvider{
         fun getCode():String?
+        fun showDialog()
     }
 
-    class ServiceProvider(private val service:SendDataService) : Binder(){
+    class ServiceProvider(private val service: SendDataService) : Binder(){
         fun getService():SendDataService{
             return service
         }

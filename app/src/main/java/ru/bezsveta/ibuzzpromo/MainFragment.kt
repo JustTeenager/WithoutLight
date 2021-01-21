@@ -20,7 +20,6 @@ import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import ru.bezsveta.ibuzzpromo.databinding.FragmentMainBinding
-import ru.bezsveta.ibuzzpromo.retrofit.BatteryStatus
 
 
 class MainFragment:SendDataService.BatteryStatusProvider, Fragment(){
@@ -118,6 +117,7 @@ class MainFragment:SendDataService.BatteryStatusProvider, Fragment(){
     override fun onDestroy() {
         super.onDestroy()
         context?.unregisterReceiver(receiver)
+        context?.unbindService(conn)
     }
 
     interface Callback{
@@ -125,4 +125,9 @@ class MainFragment:SendDataService.BatteryStatusProvider, Fragment(){
     }
 
     override fun getCode(): String? =binding.code
+
+    override fun showDialog() {
+        //TODO Ебануть сюда диалог об отключении вайфая
+        activity?.runOnUiThread {  }
+    }
 }
