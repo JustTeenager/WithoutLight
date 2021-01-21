@@ -1,9 +1,6 @@
 package ru.bezsveta.ibuzzpromo
 
-import android.app.Notification
-import android.app.NotificationChannel
-import android.app.NotificationManager
-import android.app.Service
+import android.app.*
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -13,8 +10,8 @@ import android.os.*
 import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
-import ru.bezsveta.ibuzzpromo.retrofit.BaseRetrofit
 import ru.bezsveta.ibuzzpromo.model.BatteryStatus
+import ru.bezsveta.ibuzzpromo.retrofit.BaseRetrofit
 import java.util.*
 
 
@@ -69,15 +66,23 @@ class SendDataService : Service() {
         this.startForeground(notifyId, notification)
     }
 
-    private fun buildNotification(title:String): Notification {
+    private fun buildNotification(title: String): Notification {
+        val notificationIntent = Intent(baseContext, MainActivity::class.java)
+        val contentIntent = PendingIntent.getActivity(baseContext,
+                0, notificationIntent,
+                PendingIntent.FLAG_CANCEL_CURRENT)
+
+
         val builder = NotificationCompat.Builder(baseContext, channelId)
 
         builder.setSmallIcon(R.mipmap.ic_launcher_circle)
                 .setContentTitle(title)
                 .setShowWhen(true)
                 .setOngoing(true)
+                .setContentIntent(contentIntent)
                 .setProgress(100, 0, true)
                 .priority = NotificationCompat.PRIORITY_MAX
+
         return  builder.build()
 
     }
@@ -140,22 +145,26 @@ class SendDataService : Service() {
             val doAsynchronousTask = object : TimerTask() {
                 override fun run() {
                     if (isNetworkConnect()) {
-                        if (isDisconnected) this@SendDataService.startForeground(notifyId,buildNotification(getString(R.string.connected)))
+                        if (isDisconnected) this@SendDataService.startForeground(notifyId, buildNotification(getString(R.string.connected)))
                         isDisconnected=false
                         provider?.dismissDialog()
-                        Log.d("tut_connection_true",isNetworkConnect().toString())
+                        Log.d("tut_connection_true", isNetworkConnect().toString())
                         Log.d("tut_lightstatus", lightStatus.toString())
-                        BaseRetrofit.sendBatteryData(
-                            BatteryStatus(
-                                if (lightStatus == BatteryManager.BATTERY_STATUS_CHARGING || lightStatus == BatteryManager.BATTERY_STATUS_FULL) 1 else 0,
-                                code
-                            )
-                        ).execute()
+                        try {
+                            BaseRetrofit.sendBatteryData(
+                                    BatteryStatus(
+                                            if (lightStatus == BatteryManager.BATTERY_STATUS_CHARGING || lightStatus == BatteryManager.BATTERY_STATUS_FULL) 1 else 0,
+                                            code
+                                    )
+                            ).execute()
+                        }catch (e:Exception){
+                            e.printStackTrace()
+                        }
                     }
                     else{
                         if (!isDisconnected) {
                             provider?.showDialog()
-                            changeNotification(getString(R.string.no_network))
+                            changeNotification(getString(R.string.setting_network))
                             isDisconnected=true
                         }
                     }

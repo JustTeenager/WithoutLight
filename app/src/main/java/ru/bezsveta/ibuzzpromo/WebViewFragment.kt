@@ -15,6 +15,7 @@ import ru.bezsveta.ibuzzpromo.databinding.FragmentWithWebViewBinding
 
 
 class WebViewFragment() : Fragment() {
+    private lateinit var binding:FragmentWithWebViewBinding
 
     companion object {
         private const val CODE_LINK = "code_link"
@@ -33,7 +34,7 @@ class WebViewFragment() : Fragment() {
             container: ViewGroup?,
             savedInstanceState: Bundle?
     ): View {
-        val binding:FragmentWithWebViewBinding = DataBindingUtil.inflate(
+        binding = DataBindingUtil.inflate(
                 inflater,
                 R.layout.fragment_with_web_view,
                 container,
@@ -43,6 +44,11 @@ class WebViewFragment() : Fragment() {
         binding.webView.settings.javaScriptEnabled = true
         binding.webView.webViewClient = WebViewClient()
         return binding.root
+    }
+
+
+    fun getWebView():WebView{
+        return binding.webView
     }
 
 }

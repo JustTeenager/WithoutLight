@@ -2,8 +2,10 @@ package ru.bezsveta.ibuzzpromo
 
 import android.annotation.SuppressLint
 import android.app.Activity.RESULT_OK
+import android.app.Service
 import android.content.*
 import android.content.Context.BIND_AUTO_CREATE
+import android.net.ConnectivityManager
 import android.os.BatteryManager
 import android.os.Bundle
 import android.os.IBinder
@@ -83,6 +85,23 @@ class MainFragment:SendDataService.BatteryStatusProvider, Fragment(){
         return binding.root
     }
 
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        if (!isNetworkConnect()){
+            showDialog()
+        }
+        else{
+            dismissDialog()
+        }
+
+    }
+
+
+    private fun isNetworkConnect(): Boolean {
+        val cm = context?.getSystemService(Service.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val netinfo = cm.activeNetworkInfo
+        return netinfo != null && netinfo.isConnected
+    }
 
     @SuppressLint("HardwareIds")
     private fun createConstantCode(){
@@ -132,14 +151,25 @@ class MainFragment:SendDataService.BatteryStatusProvider, Fragment(){
         activity?.runOnUiThread {
             dialog.isCancelable = false
             dialog.setTargetFragment(this, NO_INTERNET_REQUEST_CODE)
-            fragmentManager?.let { dialog.show(it, null) }
+            try {
+                fragmentManager?.let { dialog.show(it, null) }
+            }catch (e:Exception){
+                e.printStackTrace()
+            }
         }
     }
 
     override fun dismissDialog() {
         activity?.runOnUiThread {
-            if (dialog.isVisible)
-            dialog.dismiss()
+            Log.d("tut_dismiss_dialog", "out_if")
+            try {
+                dialog.dismiss()
+                Log.d("tut_dismiss_dialog", "in_if")
+            }catch (e:Exception){
+                e.printStackTrace()
+            }
+
+
         }
     }
 

@@ -16,5 +16,6 @@
     <string name="disconnect">Не удалось подключиться к серверу. Проверьте соединение с интернетом.</string>
     <string name="try_again">Попробовать ещё раз</string>
     <string name="no_network">Соединение не установлено</string>
+    <string name="setting_network">Устанавливается соединение</string>
     <string name="connected">Соединение установлено</string>
 </resources>
