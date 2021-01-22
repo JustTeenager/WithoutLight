@@ -27,13 +27,14 @@ import ru.bezsveta.ibuzzpromo.databinding.FragmentMainBinding
 
 class MainFragment:SendDataService.BatteryStatusProvider, Fragment(){
     private lateinit var binding: FragmentMainBinding
-    private val links = arrayOf(
-            "https://bez-sveta.ru/register", "https://bez-sveta.ru/voprosy-i-otvety.html",
-            "https://bez-sveta.ru/prilozhenie.html", "https://bez-sveta.ru/kontakty.html"
-    )
+
 
     companion object {
         private const val NO_INTERNET_REQUEST_CODE = 1
+        private val links = arrayOf(
+                "https://bez-sveta.ru/register", "https://bez-sveta.ru/voprosy-i-otvety.html",
+                "https://bez-sveta.ru/prilozhenie.html", "https://bez-sveta.ru/kontakty.html"
+        )
     }
 
     private lateinit var callback: Callback
@@ -47,19 +48,18 @@ class MainFragment:SendDataService.BatteryStatusProvider, Fragment(){
             dataService.launchTimer(this@MainFragment)
         }
 
-        override fun onServiceDisconnected(name: ComponentName?) {
-            Log.e("tut_conn","disconnected")
-        }
-
+        override fun onServiceDisconnected(name: ComponentName?) {}
     }
+
+
 
     lateinit var receiver: BroadcastReceiver
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
         callback = context as Callback
-        Log.d("s",context.bindService(Intent(context,SendDataService::class.java),conn,BIND_AUTO_CREATE).toString())
-        Log.d("s",context.startService(Intent(context,SendDataService::class.java)).toString())
+        context.bindService(Intent(context,SendDataService::class.java),conn,BIND_AUTO_CREATE).toString()
+        context.startService(Intent(context,SendDataService::class.java)).toString()
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -85,17 +85,21 @@ class MainFragment:SendDataService.BatteryStatusProvider, Fragment(){
         return binding.root
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        if (!isNetworkConnect()){
-            showDialog()
-        }
-        else{
+    override fun onResume() {
+        super.onResume()
+        if (isNetworkConnect()){
             dismissDialog()
         }
-
+        else {
+            showDialog()
+        }
     }
 
+
+    override fun onPause() {
+        super.onPause()
+        dismissDialog()
+    }
 
     private fun isNetworkConnect(): Boolean {
         val cm = context?.getSystemService(Service.CONNECTIVITY_SERVICE) as ConnectivityManager
@@ -149,27 +153,23 @@ class MainFragment:SendDataService.BatteryStatusProvider, Fragment(){
 
     override fun showDialog() {
         activity?.runOnUiThread {
-            dialog.isCancelable = false
-            dialog.setTargetFragment(this, NO_INTERNET_REQUEST_CODE)
-            try {
-                fragmentManager?.let { dialog.show(it, null) }
-            }catch (e:Exception){
-                e.printStackTrace()
+            if (!dialog.isAdded) {
+                try {
+                    dialog.isCancelable = false
+                    dialog.setTargetFragment(this, NO_INTERNET_REQUEST_CODE)
+                    fragmentManager?.let { dialog.show(it, null) }
+                }catch (e:Exception) {e.printStackTrace()}
             }
         }
     }
 
     override fun dismissDialog() {
         activity?.runOnUiThread {
-            Log.d("tut_dismiss_dialog", "out_if")
             try {
                 dialog.dismiss()
-                Log.d("tut_dismiss_dialog", "in_if")
             }catch (e:Exception){
                 e.printStackTrace()
             }
-
-
         }
     }
 

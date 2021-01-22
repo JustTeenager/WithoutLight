@@ -11,7 +11,7 @@ import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import ru.bezsveta.ibuzzpromo.model.BatteryStatus
-import ru.bezsveta.ibuzzpromo.retrofit.BaseRetrofit
+import ru.bezsveta.ibuzzpromo.retrofit.InternetRequestsManager
 import java.util.*
 
 
@@ -24,6 +24,7 @@ class SendDataService : Service() {
         lateinit var receiver:BroadcastReceiver
     }
 
+    val requestsManager = InternetRequestsManager()
     val timer = Timer()
     var code:String?="no_code"
     var lightStatus:Int?=-1
@@ -32,7 +33,8 @@ class SendDataService : Service() {
 
     override fun onCreate() {
         super.onCreate()
-        Log.d("provider_null", (provider == null).toString())
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP) requestsManager.initClient()
+        else requestsManager.initRetrofit()
         sendStartNotification()
         thread=SendThread("sendThread")
     }
@@ -41,7 +43,6 @@ class SendDataService : Service() {
         code=provider?.getCode()
         return ServiceProvider(this)
     }
-
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         if (!thread.isAlive) {
@@ -99,7 +100,6 @@ class SendDataService : Service() {
     private fun setLightStatusReceiver(){
         receiver=object : BroadcastReceiver() {
             override fun onReceive(context: Context?, intent: Intent?) {
-                Log.d("serviceStatus", lightStatus.toString())
                 lightStatus = intent?.getIntExtra(BatteryManager.EXTRA_STATUS, -1)
             }
         }
@@ -144,26 +144,39 @@ class SendDataService : Service() {
             var isDisconnected=false
             val doAsynchronousTask = object : TimerTask() {
                 override fun run() {
+
                     if (isNetworkConnect()) {
+                        Log.d("tut_sendData",isDisconnected.toString())
                         if (isDisconnected) this@SendDataService.startForeground(notifyId, buildNotification(getString(R.string.connected)))
-                        isDisconnected=false
+                        isDisconnected = false
                         provider?.dismissDialog()
-                        Log.d("tut_connection_true", isNetworkConnect().toString())
-                        Log.d("tut_lightstatus", lightStatus.toString())
-                        try {
-                            BaseRetrofit.sendBatteryData(
-                                    BatteryStatus(
-                                            if (lightStatus == BatteryManager.BATTERY_STATUS_CHARGING || lightStatus == BatteryManager.BATTERY_STATUS_FULL) 1 else 0,
-                                            code
-                                    )
-                            ).execute()
-                        }catch (e:Exception){
-                            e.printStackTrace()
+
+                        val batteryStatus=BatteryStatus(
+                                if (lightStatus == BatteryManager.BATTERY_STATUS_CHARGING || lightStatus == BatteryManager.BATTERY_STATUS_FULL) 1 else 0,
+                                code
+                        )
+
+                        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP)
+                        {
+                            requestsManager.sendBatteryDataViaHTTPClient(batteryStatus)
+                        }
+
+
+                        //////////////////////////////////////////////////////////////////////////////////////
+
+                        else{
+                            try {
+                                requestsManager.sendBatteryDataViaRetrofit(batteryStatus
+                                ).execute()
+                            } catch (e: Exception) {
+                                e.printStackTrace()
+                            }
                         }
                     }
                     else{
+                        Log.d("tut_no_internet",isDisconnected.toString())
+                        provider?.showDialog()
                         if (!isDisconnected) {
-                            provider?.showDialog()
                             changeNotification(getString(R.string.setting_network))
                             isDisconnected=true
                         }

@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
         <import type="ru.bezsveta.ibuzzpromo.R" />
+        <import type="androidx.core.content.ContextCompat" />
         <variable
             name="code"
             type="String" />
@@ -21,7 +23,7 @@
             android:layout_height="0dp"
             android:layout_weight="1"
             android:scaleType="centerCrop"
-            android:src="@drawable/logo" />
+            app:srcCompat="@drawable/logo" />
 
 
         <LinearLayout
@@ -117,8 +119,8 @@
                     android:layout_marginLeft="8dp"
                     android:textSize="16sp"
                     android:textStyle="bold"
-                    android:textColor="@{lightStatus ? context.getColor(R.color.green) :context.getColor(R.color.red)}"
-                    android:text="@{lightStatus ? context.getString(R.string.has_light_status) :context.getString(R.string.no_light_status)}"
+                    android:textColor="@{lightStatus ? ContextCompat.getColor(context,R.color.green) : ContextCompat.getColor(context,R.color.red)}"
+                    android:text="@{lightStatus ? context.resources.getString(R.string.has_light_status) : context.resources.getString(R.string.no_light_status)}"
                     android:layout_marginStart="8dp" />
             </LinearLayout>
 
@@ -167,7 +169,5 @@
                 android:layout_marginTop="6dp"/>
 
         </LinearLayout>
-
-
     </LinearLayout>
 </layout>

@@ -28,6 +28,8 @@ class WebViewFragment() : Fragment() {
         }
     }
 
+
+
     @SuppressLint("SetJavaScriptEnabled")
     override fun onCreateView(
             inflater: LayoutInflater,

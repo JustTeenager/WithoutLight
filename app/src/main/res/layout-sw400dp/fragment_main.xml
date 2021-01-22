@@ -3,6 +3,7 @@
 
     <data>
         <import type="ru.bezsveta.ibuzzpromo.R" />
+        <import type="androidx.core.content.ContextCompat" />
         <variable
             name="code"
             type="String" />
@@ -117,8 +118,8 @@
                     android:layout_marginLeft="8dp"
                     android:textSize="22sp"
                     android:textStyle="bold"
-                    android:textColor="@{lightStatus ? context.getColor(R.color.green) :context.getColor(R.color.red)}"
-                    android:text="@{lightStatus ? context.getString(R.string.has_light_status) :context.getString(R.string.no_light_status)}"
+                    android:textColor="@{lightStatus ? ContextCompat.getColor(context,R.color.green) : ContextCompat.getColor(context,R.color.red)}"
+                    android:text="@{lightStatus ? context.resources.getString(R.string.has_light_status) :context.resources.getString(R.string.no_light_status)}"
                     android:layout_marginStart="8dp" />
             </LinearLayout>
 

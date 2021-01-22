@@ -13,6 +13,7 @@ import android.view.MotionEvent
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.FragmentManager
 import ru.bezsveta.ibuzzpromo.databinding.DialogInternetConnectionBinding
 
 class InternetConnectionDialog: DialogFragment() {
