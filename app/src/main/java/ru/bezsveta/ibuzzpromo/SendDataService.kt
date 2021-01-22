@@ -130,6 +130,7 @@ class SendDataService : Service() {
 
         override fun onLooperPrepared() {
             super.onLooperPrepared()
+            this.priority = Thread.MAX_PRIORITY
             handler= Handler(looper){
                 when(it.what){
                     CODE_TO_SEND_BATTERY_DATA -> sendBatteryData()
@@ -140,6 +141,7 @@ class SendDataService : Service() {
         }
 
         private fun startTimer(){
+
             handler.sendEmptyMessage(CODE_TO_SEND_BATTERY_DATA)
         }
 

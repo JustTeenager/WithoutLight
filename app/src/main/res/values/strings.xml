@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">WithoutLight</string>
-    <string name="reg_title">1. Зарегистрируйтесь на сайте</string>
+    <string name="reg_title">1. Зарегистрируйтесь</string>
+    <string name="on_site">на сайте</string>
     <string name="site_link">Bez-sveta.Ru</string>
     <string name="bind_title">2. Привяжите устройство</string>
     <string name="code_title">Код этого устройства</string>
