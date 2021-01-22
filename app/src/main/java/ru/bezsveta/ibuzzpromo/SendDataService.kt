@@ -21,11 +21,11 @@ class SendDataService : Service() {
         const val channelId = "channel_battery"
         const val notifyId = 228 // some number
         const val CODE_TO_SEND_BATTERY_DATA=0
-        lateinit var receiver:BroadcastReceiver
     }
 
+    lateinit var receiver:BroadcastReceiver
     val requestsManager = InternetRequestsManager()
-    val timer = Timer()
+    //val timer = Timer()
     var code:String?="no_code"
     var lightStatus:Int?=-1
     var provider:BatteryStatusProvider?=null
@@ -33,6 +33,7 @@ class SendDataService : Service() {
 
     override fun onCreate() {
         super.onCreate()
+
         if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP) requestsManager.initClient()
         else requestsManager.initRetrofit()
         sendStartNotification()
@@ -141,10 +142,8 @@ class SendDataService : Service() {
         }
 
         private fun sendBatteryData(){
+            Thread.sleep(1000)
             var isDisconnected=false
-            val doAsynchronousTask = object : TimerTask() {
-                override fun run() {
-
                     if (isNetworkConnect()) {
                         Log.d("tut_sendData",isDisconnected.toString())
                         if (isDisconnected) this@SendDataService.startForeground(notifyId, buildNotification(getString(R.string.connected)))
@@ -178,12 +177,11 @@ class SendDataService : Service() {
                         provider?.showDialog()
                         if (!isDisconnected) {
                             changeNotification(getString(R.string.setting_network))
-                            isDisconnected=true
+                            isDisconnected = true
                         }
-                    }
-                }
             }
-             timer.schedule(doAsynchronousTask, 2000, 10000)
+            Thread.sleep(10000)
+            startTimer()
         }
     }
 

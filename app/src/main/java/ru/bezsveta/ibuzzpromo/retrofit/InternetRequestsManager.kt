@@ -42,7 +42,7 @@ class InternetRequestsManager {
         val clientTemp = DefaultHttpClient()
         val registry = SchemeRegistry()
         val socketFactory: SSLSocketFactory = SSLSocketFactory.getSocketFactory()
-        socketFactory.setHostnameVerifier(hostnameVerifier as X509HostnameVerifier)
+        socketFactory.hostnameVerifier = hostnameVerifier as X509HostnameVerifier
         registry.register(Scheme("https", socketFactory, 443))
         val mgr = SingleClientConnManager(clientTemp.params, registry)
         client = DefaultHttpClient(mgr, clientTemp.params)
