@@ -22,6 +22,8 @@ android {
         dataBinding true
     }
 
+    useLibrary 'org.apache.http.legacy'
+
     buildTypes {
         release {
             minifyEnabled false

@@ -1,5 +1,6 @@
 package ru.bezsveta.ibuzzpromo
 
+import android.annotation.SuppressLint
 import android.app.*
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -31,9 +32,9 @@ class SendDataService : Service() {
     var provider:BatteryStatusProvider?=null
     lateinit var thread:SendThread
 
+    @SuppressLint("InvalidWakeLockTag")
     override fun onCreate() {
         super.onCreate()
-
         if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP) requestsManager.initClient()
         else requestsManager.initRetrofit()
         sendStartNotification()
@@ -49,7 +50,7 @@ class SendDataService : Service() {
         if (!thread.isAlive) {
             thread.start()
         }
-        return START_REDELIVER_INTENT
+        return START_STICKY
     }
 
     fun launchTimer(provider: BatteryStatusProvider) {
@@ -70,9 +71,11 @@ class SendDataService : Service() {
 
     private fun buildNotification(title: String): Notification {
         val notificationIntent = Intent(baseContext, MainActivity::class.java)
-        val contentIntent = PendingIntent.getActivity(baseContext,
-                0, notificationIntent,
-                PendingIntent.FLAG_CANCEL_CURRENT)
+        val contentIntent = PendingIntent.getActivity(
+            baseContext,
+            0, notificationIntent,
+            PendingIntent.FLAG_CANCEL_CURRENT
+        )
 
 
         val builder = NotificationCompat.Builder(baseContext, channelId)
@@ -101,7 +104,7 @@ class SendDataService : Service() {
     private fun setLightStatusReceiver(){
         receiver=object : BroadcastReceiver() {
             override fun onReceive(context: Context?, intent: Intent?) {
-                lightStatus = intent?.getIntExtra(BatteryManager.EXTRA_STATUS, -1)
+               lightStatus = intent?.getIntExtra(BatteryManager.EXTRA_STATUS, -1)
             }
         }
         registerReceiver(receiver, IntentFilter(Intent.ACTION_BATTERY_CHANGED))
@@ -123,6 +126,27 @@ class SendDataService : Service() {
         this.startForeground(notifyId, notification)
     }
 
+    /*@SuppressLint("InvalidWakeLockTag")
+    fun wakeDevice() {
+        val powerManager = getSystemService(POWER_SERVICE) as PowerManager
+        val wakeLock = powerManager.newWakeLock(
+            PowerManager.SCREEN_BRIGHT_WAKE_LOCK or PowerManager.FULL_WAKE_LOCK or PowerManager.ACQUIRE_CAUSES_WAKEUP,
+            "TAG"
+        )
+        wakeLock.acquire()
+        val keyguardManager = getSystemService(KEYGUARD_SERVICE) as KeyguardManager
+        val keyguardLock = keyguardManager.newKeyguardLock("TAG")
+        keyguardLock.disableKeyguard()
+        baseContext?.runOnUiThread(Runnable {
+            getWindow().addFlags(
+                WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED
+                        or WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON
+                        or WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
+                        or WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD
+            )
+        })
+    }*/
+
     inner class SendThread(name: String?) : HandlerThread(name) {
         private lateinit var handler:Handler
 
@@ -141,18 +165,25 @@ class SendDataService : Service() {
             handler.sendEmptyMessage(CODE_TO_SEND_BATTERY_DATA)
         }
 
+        @SuppressLint("InvalidWakeLockTag")
         private fun sendBatteryData(){
             Thread.sleep(1000)
             var isDisconnected=false
                     if (isNetworkConnect()) {
-                        Log.d("tut_sendData",isDisconnected.toString())
-                        if (isDisconnected) this@SendDataService.startForeground(notifyId, buildNotification(getString(R.string.connected)))
+                        Log.d("tut_sendData", isDisconnected.toString())
+                        if (isDisconnected) this@SendDataService.startForeground(
+                            notifyId, buildNotification(
+                                getString(
+                                    R.string.connected
+                                )
+                            )
+                        )
                         isDisconnected = false
                         provider?.dismissDialog()
 
                         val batteryStatus=BatteryStatus(
-                                if (lightStatus == BatteryManager.BATTERY_STATUS_CHARGING || lightStatus == BatteryManager.BATTERY_STATUS_FULL) 1 else 0,
-                                code
+                            if (lightStatus == BatteryManager.BATTERY_STATUS_CHARGING || lightStatus == BatteryManager.BATTERY_STATUS_FULL) 1 else 0,
+                            code
                         )
 
                         if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP)
@@ -165,7 +196,8 @@ class SendDataService : Service() {
 
                         else{
                             try {
-                                requestsManager.sendBatteryDataViaRetrofit(batteryStatus
+                                requestsManager.sendBatteryDataViaRetrofit(
+                                    batteryStatus
                                 ).execute()
                             } catch (e: Exception) {
                                 e.printStackTrace()
@@ -173,7 +205,7 @@ class SendDataService : Service() {
                         }
                     }
                     else{
-                        Log.d("tut_no_internet",isDisconnected.toString())
+                        Log.d("tut_no_internet", isDisconnected.toString())
                         provider?.showDialog()
                         if (!isDisconnected) {
                             changeNotification(getString(R.string.setting_network))

@@ -9,6 +9,7 @@ import ru.bezsveta.ibuzzpromo.model.BatteryStatus
 
 interface StatusLightAPI {
 
+    //@Headers("Content-Type: application/json")
     @POST("sendData/")
     @FormUrlEncoded
     fun sendData(@Field("charge_status") charge_status:Int,@Field("device_serial") code:String? ): Call<Void>
