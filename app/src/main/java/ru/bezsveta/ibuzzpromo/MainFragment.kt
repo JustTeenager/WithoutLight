@@ -1,11 +1,12 @@
 package ru.bezsveta.ibuzzpromo
 
 import android.annotation.SuppressLint
-import android.app.Activity.*
+import android.app.Activity.BIND_IMPORTANT
+import android.app.Activity.RESULT_OK
 import android.app.Service
 import android.content.*
+import android.content.Context.BIND_AUTO_CREATE
 import android.net.ConnectivityManager
-import android.net.Uri
 import android.os.BatteryManager
 import android.os.Bundle
 import android.os.IBinder
@@ -32,8 +33,8 @@ class MainFragment:SendDataService.BatteryStatusProvider, Fragment(){
     companion object {
         private const val NO_INTERNET_REQUEST_CODE = 1
         private val links = arrayOf(
-            "https://bez-sveta.ru/register", "https://bez-sveta.ru/voprosy-i-otvety.html",
-            "https://bez-sveta.ru/prilozhenie.html", "https://bez-sveta.ru/kontakty.html"
+                "https://bez-sveta.ru/register", "https://bez-sveta.ru/voprosy-i-otvety.html",
+                "https://bez-sveta.ru/prilozhenie.html", "https://bez-sveta.ru/kontakty.html"
         )
     }
 
@@ -43,7 +44,7 @@ class MainFragment:SendDataService.BatteryStatusProvider, Fragment(){
 
     private val conn:ServiceConnection = object:ServiceConnection{
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
-            Log.e("tut_conn", "connected")
+            Log.e("tut_conn","connected")
             dataService=(service as SendDataService.ServiceProvider).getService()
             dataService.launchTimer(this@MainFragment)
         }
@@ -58,13 +59,12 @@ class MainFragment:SendDataService.BatteryStatusProvider, Fragment(){
     override fun onAttach(context: Context) {
         super.onAttach(context)
         callback = context as Callback
-        context.bindService(Intent(context, SendDataService::class.java), conn, BIND_WAIVE_PRIORITY)
-        context.startService(Intent(context, SendDataService::class.java))
+        context.bindService(Intent(context,SendDataService::class.java),conn, BIND_IMPORTANT)
+        context.startService(Intent(context,SendDataService::class.java))
     }
 
     @SuppressLint("ClickableViewAccessibility")
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_main, container, false)
         createConstantCode()
@@ -76,14 +76,13 @@ class MainFragment:SendDataService.BatteryStatusProvider, Fragment(){
         binding.copyText.setOnTouchListener { v, event ->
             when (event.action) {
                 MotionEvent.ACTION_DOWN -> v.setBackgroundColor(resources.getColor(R.color.green_dark))
-                MotionEvent.ACTION_UP -> {
+                MotionEvent.ACTION_UP ->{
                     v.setBackgroundColor(resources.getColor(R.color.green_light))
                     copyCode()
                 }
             }
             return@setOnTouchListener true
         }
-
         return binding.root
     }
 
@@ -112,8 +111,8 @@ class MainFragment:SendDataService.BatteryStatusProvider, Fragment(){
     @SuppressLint("HardwareIds")
     private fun createConstantCode(){
         binding.code=Settings.Secure.getString(
-            activity?.contentResolver,
-            Settings.Secure.ANDROID_ID
+                activity?.contentResolver,
+                Settings.Secure.ANDROID_ID
         )
     }
 
@@ -121,18 +120,17 @@ class MainFragment:SendDataService.BatteryStatusProvider, Fragment(){
         receiver=object : BroadcastReceiver() {
             override fun onReceive(context: Context?, intent: Intent?) {
                 val status = intent?.getIntExtra(BatteryManager.EXTRA_STATUS, -1)
-                binding.setLightStatus(status == BatteryManager.BATTERY_STATUS_CHARGING || status == BatteryManager.BATTERY_STATUS_FULL)
+                binding.setLightStatus(status == BatteryManager.BATTERY_STATUS_CHARGING || status== BatteryManager.BATTERY_STATUS_FULL)
             }
         }
-        context!!.registerReceiver(receiver, IntentFilter(Intent.ACTION_BATTERY_CHANGED))
+        context!!.registerReceiver(receiver,IntentFilter(Intent.ACTION_BATTERY_CHANGED))
     }
 
     private fun setUpLink(textView: TextView, link: String){
         val ss = SpannableString(textView.text)
         ss.setSpan(
-            URLSpan(java.lang.String.valueOf(textView.text)), 0, textView.text.length,
-            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
-        )
+                URLSpan(java.lang.String.valueOf(textView.text)), 0, textView.text.length,
+                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
         textView.text = ss
         textView.setOnClickListener{
                 callback.changeFragmentFromMainToWebView(link)
@@ -161,7 +159,7 @@ class MainFragment:SendDataService.BatteryStatusProvider, Fragment(){
                     dialog.isCancelable = false
                     dialog.setTargetFragment(this, NO_INTERNET_REQUEST_CODE)
                     fragmentManager?.let { dialog.show(it, null) }
-                }catch (e: Exception) {e.printStackTrace()}
+                }catch (e:Exception) {e.printStackTrace()}
             }
         }
     }
@@ -170,7 +168,7 @@ class MainFragment:SendDataService.BatteryStatusProvider, Fragment(){
         activity?.runOnUiThread {
             try {
                 dialog.dismiss()
-            }catch (e: Exception){
+            }catch (e:Exception){
                 e.printStackTrace()
             }
         }
