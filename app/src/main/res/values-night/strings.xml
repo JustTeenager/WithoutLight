@@ -1,10 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="reg_title">1.Зарегистрируйтесь на сайте</string>
-    <string name="site_link">Bez-sveta.ru</string>
+    <string name="app_name">WithoutLight</string>
+    <string name="reg_title">1. Зарегистрируйтесь на сайте</string>
+    <string name="site_link">Bez-sveta.Ru</string>
+    <string name="bind_title">2. Привяжите устройство</string>
     <string name="code_title">Код этого устройства</string>
     <string name="copy_code_title">Скопировать код</string>
     <string name="status_title">Текущий статус:</string>
+    <string name="has_light_status">Есть свет</string>
+    <string name="no_light_status">Нет света</string>
+    <string name="info_title">Информация:</string>
     <string name="faq_link">Вопросы и ответы</string>
     <string name="about_link">О приложении</string>
     <string name="contacts_link">Контакты</string>
@@ -12,4 +17,7 @@
     <string name="disconnect">Не удалось подключиться к серверу. Проверьте соединение с интернетом.</string>
     <string name="try_again">Попробовать ещё раз</string>
     <string name="no_network">Соединение не установлено</string>
+    <string name="setting_network">Устанавливается соединение</string>
+    <string name="connected">Соединение установлено</string>
+    <string name="slash">|</string>
 </resources>

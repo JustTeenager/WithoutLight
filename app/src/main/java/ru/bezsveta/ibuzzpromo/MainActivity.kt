@@ -4,7 +4,6 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 
 class MainActivity : AppCompatActivity(), MainFragment.Callback {
-    //private lateinit var webViewFragment: WebViewFragment
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -16,12 +15,4 @@ class MainActivity : AppCompatActivity(), MainFragment.Callback {
         supportFragmentManager.beginTransaction().add(R.id.container_fragment,WebViewFragment.newInstance(link))
                 .addToBackStack(null).commit()
     }
-
-    /*override fun onBackPressed() {
-        if (webViewFragment.getWebView().canGoBack()) {
-            webViewFragment.getWebView().goBack()
-        } else {
-            super.onBackPressed()
-        }
-    }*/
 }

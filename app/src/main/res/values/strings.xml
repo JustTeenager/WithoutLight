@@ -1,8 +1,8 @@
 <resources>
     <string name="app_name">WithoutLight</string>
-    <string name="reg_title">1.Зарегистрируйтесь на сайте</string>
-    <string name="site_link">Bez-sveta.ru</string>
-    <string name="bind_title">2.Привяжите устройство</string>
+    <string name="reg_title">1. Зарегистрируйтесь на сайте</string>
+    <string name="site_link">Bez-sveta.Ru</string>
+    <string name="bind_title">2. Привяжите устройство</string>
     <string name="code_title">Код этого устройства</string>
     <string name="copy_code_title">Скопировать код</string>
     <string name="status_title">Текущий статус:</string>
@@ -18,4 +18,5 @@
     <string name="no_network">Соединение не установлено</string>
     <string name="setting_network">Устанавливается соединение</string>
     <string name="connected">Соединение установлено</string>
+    <string name="slash">|</string>
 </resources>

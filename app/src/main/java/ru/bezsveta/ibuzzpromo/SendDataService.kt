@@ -26,19 +26,14 @@ class SendDataService : Service() {
 
     lateinit var receiver:BroadcastReceiver
     val requestsManager = InternetRequestsManager()
-    //val timer = Timer()
     var code:String?="no_code"
     var lightStatus:Int?=-1
     var provider:BatteryStatusProvider?=null
-
-    lateinit var fullWakeLock:PowerManager.WakeLock
-    lateinit var partialWakeLock:PowerManager.WakeLock
 
     lateinit var thread:SendThread
 
     override fun onCreate() {
         super.onCreate()
-        createWakeLocks()
         if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP) requestsManager.initClient()
         else requestsManager.initRetrofit()
         sendStartNotification()
@@ -114,22 +109,6 @@ class SendDataService : Service() {
         registerReceiver(receiver, IntentFilter(Intent.ACTION_BATTERY_CHANGED))
     }
 
-   @SuppressLint("InvalidWakeLockTag")
-   fun createWakeLocks() {
-        val powerManager = (getSystemService(POWER_SERVICE) as PowerManager)
-        fullWakeLock = powerManager.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK or PowerManager.FULL_WAKE_LOCK or PowerManager.ACQUIRE_CAUSES_WAKEUP, "Loneworker - FULL WAKE LOCK")
-        partialWakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "Loneworker - PARTIAL WAKE LOCK")
-    }
-
-    fun wakeDevice() {
-        fullWakeLock.acquire(10*60*1000L)
-        Log.d("tut","device_waked")
-        //Todo()
-        val keyguardManager = getSystemService(KEYGUARD_SERVICE) as KeyguardManager
-        val keyguardLock = keyguardManager.newKeyguardLock("TAG")
-        keyguardLock.disableKeyguard()
-    }
-
     private fun isNetworkConnect(): Boolean {
         val cm = getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
         val netinfo = cm.activeNetworkInfo
@@ -168,7 +147,6 @@ class SendDataService : Service() {
             Thread.sleep(1000)
             var isDisconnected=false
                     if (isNetworkConnect()) {
-                        wakeDevice()
                         Log.d("tut_sendData", isDisconnected.toString())
                         if (isDisconnected) this@SendDataService.startForeground(notifyId, buildNotification(getString(R.string.connected)))
                         isDisconnected = false
@@ -189,8 +167,7 @@ class SendDataService : Service() {
 
                         else{
                             try {
-                                requestsManager.sendBatteryDataViaRetrofit(batteryStatus
-                                ).execute()
+                                requestsManager.sendBatteryDataViaRetrofit(batteryStatus).execute()
                             } catch (e: Exception) {
                                 e.printStackTrace()
                             }
@@ -204,13 +181,7 @@ class SendDataService : Service() {
                             isDisconnected = true
                         }
             }
-            if(fullWakeLock.isHeld){
-                fullWakeLock.release();
-            }
-            if(partialWakeLock.isHeld){
-                partialWakeLock.release();
-            }
-            Thread.sleep(10000)
+            Thread.sleep(60000)
             startTimer()
         }
     }
